@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import { Button } from 'reactstrap';
 
 export class App extends Component {
   render() {
-    return <div>I live inside app component.hihi,haha.</div>;
+    return <Button color="primary">This is primary colored button!</Button>;
   }
 }
 
