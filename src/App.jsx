@@ -1,9 +1,19 @@
 import React, { Component } from 'react';
-import { Button } from 'reactstrap';
+import { Container } from 'reactstrap';
+import NavBar from './components/NavBar';
+
+import MainContent from './components/MainContent';
 
 export class App extends Component {
   render() {
-    return <Button color="primary">This is primary colored button!</Button>;
+    return (
+      <div>
+        <NavBar />
+        <Container>
+          <MainContent />
+        </Container>
+      </div>
+    );
   }
 }
 
