@@ -1,42 +1,44 @@
 import React, { Component } from 'react';
 import { Row, Col, Button, Table } from 'reactstrap';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { observer, inject } from 'mobx-react';
 
-export default class BucketList extends Component {
+import CreateBucket from './CreateBucket';
+
+@inject('bucketStore')
+@observer
+class BucketList extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      loading: true,
-      buckets: []
-    };
   }
 
   componentDidMount() {
-    axios
-      .get('https://challenge.3fs.si/storage/buckets', {
-        headers: {
-          Authorization: `Token ${apiKey}`
-        }
-      })
-      .then(res => {
-        this.setState({
-          loading: !this.state.loading,
-          buckets: res.data.buckets
-        });
-      });
+    this.props.bucketStore.fetchBucketList();
   }
 
-  renderBuckets() {
-    return this.state.buckets.map(bucket => {
-      <tr>
-        <td>{bucket.name}</td>
-        <td>{bucket.location.name}</td>
-      </tr>;
+  openBucketAddForm() {
+    this.props.bucketStore.addNewBucketFormOpen();
+  }
+
+  renderBuckets(buckets) {
+    return buckets.map(bucket => {
+      return (
+        <tr key={bucket.id}>
+          <td>
+            <Link to="/view">{bucket.name}</Link>
+          </td>
+          <td>{bucket.location.name}</td>
+        </tr>
+      );
     });
   }
 
   render() {
+    const {
+      loadingBuckets,
+      buckets,
+      isCreateNewBucket
+    } = this.props.bucketStore;
     return (
       <div>
         <Row>
@@ -44,15 +46,37 @@ export default class BucketList extends Component {
             <h1>Bucket list</h1>
           </Col>
         </Row>
-        {this.state.loading ? (
-          <h2>Loading data...</h2>
+        {isCreateNewBucket ? (
+          <Row
+            style={{
+              backgroundColor: 'white',
+              marginTop: '2em',
+              marginBottom: '2em',
+              padding: '2em 0em'
+            }}
+          >
+            <Col>
+              <CreateBucket />
+            </Col>
+          </Row>
+        ) : (
+          ''
+        )}
+        {loadingBuckets ? (
+          <h1>Loading data...</h1>
         ) : (
           <Row>
             <Col xs="6">
-              <p>All buckets ({this.state.buckets.length})</p>
+              <p>All buckets ({buckets.length})</p>
             </Col>
             <Col xs="6">
-              <Button color="primary" className="float-right">
+              <Button
+                color="primary"
+                className="float-right"
+                onClick={() => {
+                  this.openBucketAddForm();
+                }}
+              >
                 Create new bucket
               </Button>
             </Col>
@@ -64,7 +88,7 @@ export default class BucketList extends Component {
                     <th>Location</th>
                   </tr>
                 </thead>
-                <tbody>{this.renderBuckets()}</tbody>
+                <tbody>{this.renderBuckets(buckets)}</tbody>
               </Table>
             </Col>
           </Row>
@@ -73,3 +97,5 @@ export default class BucketList extends Component {
     );
   }
 }
+
+export default BucketList;
