@@ -1,7 +1,20 @@
-import { observable, decorate, action, configure, runInAction } from 'mobx';
+import {
+  observable,
+  decorate,
+  action,
+  configure,
+  runInAction,
+  computed
+} from 'mobx';
 import axios from 'axios';
 
-const apiKey = process.env.SECURE_CLOUD_STORAGE_API_KEY;
+const API_KEY = process.env.SECURE_CLOUD_STORAGE_API_KEY;
+const BASE_URL = 'https://challenge.3fs.si/storage';
+const HEADERS = {
+  headers: {
+    Authorization: `Token ${API_KEY}`
+  }
+};
 
 configure({ enforceActions: 'observed' });
 
@@ -12,17 +25,15 @@ class BucketStore {
 
   fetchBucketList() {
     this.loadingBuckets = true;
-    axios
-      .get('https://challenge.3fs.si/storage/buckets', {
-        headers: {
-          Authorization: `Token ${apiKey}`
-        }
-      })
-      .then(res => {
-        runInAction(() => {
-          this.setBuckets(res.data);
-        });
+    axios.get(`${BASE_URL}/buckets`, HEADERS).then(res => {
+      runInAction(() => {
+        this.setBuckets(res.data);
       });
+    });
+  }
+
+  get totalBucketCount() {
+    return this.buckets.length;
   }
 
   addNewBucketFormOpen() {
@@ -40,7 +51,8 @@ decorate(BucketStore, {
   loadingBuckets: observable,
   isCreateNewBucket: observable,
   fetchBucketList: action,
-  addNewBucketFormOpen: action
+  addNewBucketFormOpen: action,
+  totalBucketCount: computed
 });
 
 var store = (window.store = new BucketStore());

@@ -38,7 +38,8 @@ class BucketList extends Component {
     const {
       loadingBuckets,
       buckets,
-      isCreateNewBucket
+      isCreateNewBucket,
+      totalBucketCount
     } = this.props.bucketStore;
     return (
       <div>
@@ -61,7 +62,7 @@ class BucketList extends Component {
         ) : (
           <Row className="whiteBackground">
             <Col xs="6">
-              <p>All buckets ({buckets.length})</p>
+              <p>All buckets ({totalBucketCount})</p>
             </Col>
             <Col xs="6">
               <Button
