@@ -70,7 +70,7 @@ export class CreateBucket extends Component {
           <Row>
             <Col xs="6">
               <FormGroup>
-                <Label for="bucketName">Bucket name</Label>
+                <Label for="bucketName">Bucket name*</Label>
                 <Input
                   type="text"
                   name="bucket"
@@ -83,13 +83,12 @@ export class CreateBucket extends Component {
             </Col>
             <Col xs="6">
               <FormGroup>
-                <Label for="selectLocation">Bucket Location</Label>
+                <Label for="selectLocation">Bucket Location*</Label>
                 {this.renderLocations()}
               </FormGroup>
             </Col>
           </Row>
           <Button color="primary">Create Bucket</Button>
-          <Button color="danger">Cancel</Button>
         </Form>
       </div>
     );

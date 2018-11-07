@@ -1,15 +1,35 @@
 import React from 'react';
-import { Row, Button, Col, Table } from 'reactstrap';
+import {
+  Row,
+  Button,
+  Col,
+  Table,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader
+} from 'reactstrap';
 
 class BucketFiles extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      modal: false
+    };
     this.fileInputRef = React.createRef();
+    this.toggle = this.toggle.bind(this);
+  }
+  toggle() {
+    this.setState({
+      modal: !this.state.modal
+    });
   }
 
   uploadObject() {
     this.fileInputRef.current.click();
   }
+
+  openModalConfirmationDialog() {}
 
   render() {
     return (
@@ -33,7 +53,11 @@ class BucketFiles extends React.Component {
               >
                 Upload object
               </Button>
-              <Button color="primary" className="float-right mr-1">
+              <Button
+                color="primary"
+                className="float-right mr-1"
+                onClick={this.toggle}
+              >
                 Delete object
               </Button>
             </div>
@@ -59,6 +83,17 @@ class BucketFiles extends React.Component {
             </Table>
           </Col>
         </Row>
+        <Modal isOpen={this.state.modal} toggle={this.toggle} centered>
+          <ModalBody>Do you really want to delete this object?</ModalBody>
+          <ModalFooter className="float-left">
+            <Button color="danger" onClick={this.toggle}>
+              Delete
+            </Button>{' '}
+            <Button color="secondary" onClick={this.toggle}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
       </div>
     );
   }

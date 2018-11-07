@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 
 import CreateBucket from './CreateBucket';
+import './BucketList.css';
 
 @inject('bucketStore')
 @observer
@@ -47,14 +48,7 @@ class BucketList extends Component {
           </Col>
         </Row>
         {isCreateNewBucket ? (
-          <Row
-            style={{
-              backgroundColor: 'white',
-              marginTop: '2em',
-              marginBottom: '2em',
-              padding: '2em 0em'
-            }}
-          >
+          <Row className="whiteBackground">
             <Col>
               <CreateBucket />
             </Col>
@@ -65,7 +59,7 @@ class BucketList extends Component {
         {loadingBuckets ? (
           <h1>Loading data...</h1>
         ) : (
-          <Row>
+          <Row className="whiteBackground">
             <Col xs="6">
               <p>All buckets ({buckets.length})</p>
             </Col>
