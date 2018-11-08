@@ -19,10 +19,14 @@ const HEADERS = {
 configure({ enforceActions: 'observed' });
 
 class BucketStore {
+  @observable
   buckets = [];
+  @observable
   loadingBuckets = false;
+  @observable
   isCreateNewBucket = false;
 
+  @action
   fetchBucketList() {
     this.loadingBuckets = true;
     axios.get(`${BASE_URL}/buckets`, HEADERS).then(res => {
@@ -32,10 +36,12 @@ class BucketStore {
     });
   }
 
+  @computed
   get totalBucketCount() {
     return this.buckets.length;
   }
 
+  @action
   addNewBucketFormOpen() {
     this.isCreateNewBucket = !this.isCreateNewBucket;
   }
@@ -46,14 +52,14 @@ class BucketStore {
   }
 }
 
-decorate(BucketStore, {
-  buckets: observable,
-  loadingBuckets: observable,
-  isCreateNewBucket: observable,
-  fetchBucketList: action,
-  addNewBucketFormOpen: action,
-  totalBucketCount: computed
-});
+// decorate(BucketStore, {
+//   buckets: observable,
+//   loadingBuckets: observable,
+//   isCreateNewBucket: observable,
+//   fetchBucketList: action,
+//   addNewBucketFormOpen: action,
+//   totalBucketCount: computed
+// });
 
 var store = (window.store = new BucketStore());
 
