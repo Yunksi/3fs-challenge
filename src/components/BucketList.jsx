@@ -26,7 +26,7 @@ class BucketList extends Component {
       return (
         <tr key={bucket.id}>
           <td>
-            <Link to="/view">{bucket.name}</Link>
+            <Link to={{ pathname: `/bucket/${bucket.id}` }}>{bucket.name}</Link>
           </td>
           <td>{bucket.location.name}</td>
         </tr>

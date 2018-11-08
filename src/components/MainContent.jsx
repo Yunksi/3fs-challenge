@@ -7,7 +7,7 @@ const MainContent = () => {
   return (
     <Switch>
       <Route path="/" exact component={BucketList} />
-      <Route path="/view" component={Bucket} />
+      <Route path="/bucket/:id" component={Bucket} />
     </Switch>
   );
 };

@@ -2,7 +2,12 @@ import React, { Component } from 'react';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import BucketDetails from './BucketDetails';
 import BucketFiles from './BucketFiles';
+import { inject, observer } from 'mobx-react';
+import { withRouter } from 'react-router';
 
+@withRouter
+@inject('bucketStore')
+@observer
 export class Bucket extends Component {
   constructor(props) {
     super(props);
@@ -12,6 +17,10 @@ export class Bucket extends Component {
       files: []
     };
   }
+
+  componentDidMount = () => {
+    console.log(this.props.match.params.id);
+  };
 
   toggle(tab) {
     if (this.state.activeTab !== tab) {
