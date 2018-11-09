@@ -8,6 +8,7 @@ import {
 } from 'mobx';
 import axios from 'axios';
 import _ from 'lodash';
+import filesize from 'filesize';
 
 const API_KEY = process.env.SECURE_CLOUD_STORAGE_API_KEY;
 const BASE_URL = 'https://challenge.3fs.si/storage';
@@ -34,25 +35,30 @@ class BucketStore {
   bucketFiles = [];
   @observable
   selectedBucket = {};
+  @observable
+  isDeleteObjectModalOpened = false;
+  deleteObject = '';
+  @observable
+  activeTab = 'files';
 
   @action
-  fetchBucketList() {
+  fetchBucketList = () => {
     this.loadingBuckets = true;
     axios.get(`${BASE_URL}/buckets`, HEADERS).then(res => {
       runInAction(() => {
         this.setBuckets(res.data);
       });
     });
-  }
+  };
 
   @action
-  getLocations() {
+  getLocations = () => {
     axios.get(`${BASE_URL}/locations`, HEADERS).then(res => {
       runInAction(() => {
         this.setLocations(res.data);
       });
     });
-  }
+  };
 
   setLocations = data => {
     this.locations = data.locations;
@@ -60,6 +66,11 @@ class BucketStore {
 
   setBucketFiles = data => {
     this.bucketFiles = data.objects;
+  };
+
+  setBuckets = data => {
+    this.buckets = data.buckets;
+    this.loadingBuckets = false;
   };
 
   @computed
@@ -77,7 +88,7 @@ class BucketStore {
     const totalSize = _.sumBy(this.bucketFiles, file => {
       return file.size;
     });
-    return totalSize;
+    return filesize(totalSize);
   }
 
   @action
@@ -93,9 +104,10 @@ class BucketStore {
     this.isCreateNewBucket = !this.isCreateNewBucket;
   }
 
-  setBuckets = data => {
-    this.buckets = data.buckets;
-    this.loadingBuckets = false;
+  @action
+  openCloseDeleteObjectModal = objectToDelete => {
+    this.isDeleteObjectModalOpened = !this.isDeleteObjectModalOpened;
+    this.deleteObject = objectToDelete;
   };
 
   @action
@@ -146,6 +158,26 @@ class BucketStore {
         this.fetchBucketList();
       });
     });
+  };
+
+  @action
+  deleteObjectFromBucket = bucketId => {
+    axios
+      .delete(
+        `${BASE_URL}/buckets/${bucketId}/objects/${this.deleteObject}`,
+        HEADERS
+      )
+      .then(res => {
+        runInAction(() => {
+          this.getBucketFiles();
+          this.isDeleteObjectModalOpened = false;
+        });
+      });
+  };
+
+  @action
+  setActiveTab = tab => {
+    this.activeTab = tab;
   };
 }
 

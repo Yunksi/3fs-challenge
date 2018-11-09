@@ -11,26 +11,17 @@ import { withRouter } from 'react-router';
 export class Bucket extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      activeTab: 'files',
-      files: []
-    };
   }
   componentDidMount = () => {
     this.props.bucketStore.getBucket(this.props.match.params.id);
   };
 
   toggle(tab) {
-    if (this.state.activeTab !== tab) {
-      this.setState({
-        activeTab: tab
-      });
-    }
+    this.props.bucketStore.setActiveTab(tab);
   }
 
   render() {
-    const { selectedBucket } = this.props.bucketStore;
+    const { selectedBucket, activeTab } = this.props.bucketStore;
     return (
       <div>
         <h1 style={{ marginTop: '1em', marginBottom: '1em' }}>
@@ -39,7 +30,7 @@ export class Bucket extends Component {
         <Nav tabs>
           <NavItem>
             <NavLink
-              className={this.state.activeTab === 'files' ? 'active' : ''}
+              className={activeTab === 'files' ? 'active' : ''}
               onClick={() => {
                 this.toggle('files');
               }}
@@ -49,7 +40,7 @@ export class Bucket extends Component {
           </NavItem>
           <NavItem>
             <NavLink
-              className={this.state.activeTab === 'details' ? 'active' : ''}
+              className={activeTab === 'details' ? 'active' : ''}
               onClick={() => {
                 this.toggle('details');
               }}
@@ -58,7 +49,7 @@ export class Bucket extends Component {
             </NavLink>
           </NavItem>
         </Nav>
-        <TabContent activeTab={this.state.activeTab}>
+        <TabContent activeTab={activeTab}>
           <TabPane tabId="files" className="mt-3">
             <BucketFiles />
           </TabPane>

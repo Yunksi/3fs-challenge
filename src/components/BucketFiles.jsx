@@ -10,6 +10,10 @@ import {
 } from 'reactstrap';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router';
+import Moment from 'react-moment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
+import filesize from 'filesize';
 
 @withRouter
 @inject('bucketStore')
@@ -17,9 +21,7 @@ import { withRouter } from 'react-router';
 class BucketFiles extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      modal: false
-    };
+
     this.fileInputRef = React.createRef();
     this.toggle = this.toggle.bind(this);
   }
@@ -28,25 +30,38 @@ class BucketFiles extends React.Component {
     this.props.bucketStore.getBucketFiles(this.props.match.params.id);
   };
 
-  toggle() {
-    this.setState({
-      modal: !this.state.modal
-    });
+  toggle(objectName) {
+    this.props.bucketStore.openCloseDeleteObjectModal(objectName);
   }
 
   uploadObject() {
     this.fileInputRef.current.click();
   }
 
-  openModalConfirmationDialog() {}
-
   renderBucketFiles(files) {
     return files.map(file => {
       return (
-        <tr>
-          <td>{file.name}</td>
-          <td>{file.last_modified}</td>
-          <td>{file.size}</td>
+        <tr key={file.name}>
+          <td>
+            <FontAwesomeIcon
+              icon={faFileAlt}
+              style={{ marginRight: '0.75em', fontSize: '1.5em' }}
+            />
+            {file.name}
+          </td>
+          <td>
+            <Moment format="DD.MM.YYYY" date={file.last_modified} />
+          </td>
+          <td>{filesize(file.size)}</td>
+          <td>
+            <Button
+              color="danger"
+              className="float-right mr-1"
+              onClick={() => this.toggle(file.name)}
+            >
+              <FontAwesomeIcon icon="times" />
+            </Button>
+          </td>
         </tr>
       );
     });
@@ -59,8 +74,16 @@ class BucketFiles extends React.Component {
     );
   };
 
+  deleteObject = () => {
+    this.props.bucketStore.deleteObjectFromBucket(this.props.match.params.id);
+  };
+
   render() {
-    const { totalBucketFilesCount, bucketFiles } = this.props.bucketStore;
+    const {
+      totalBucketFilesCount,
+      bucketFiles,
+      isDeleteObjectModalOpened
+    } = this.props.bucketStore;
     return (
       <div>
         <input
@@ -81,14 +104,7 @@ class BucketFiles extends React.Component {
                 className="float-right"
                 onClick={() => this.uploadObject()}
               >
-                Upload object
-              </Button>
-              <Button
-                color="primary"
-                className="float-right mr-1"
-                onClick={this.toggle}
-              >
-                Delete object
+                Upload objects
               </Button>
             </div>
           </Col>
@@ -101,18 +117,19 @@ class BucketFiles extends React.Component {
                   <th>Name</th>
                   <th>Last modified</th>
                   <th>Size</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>{this.renderBucketFiles(bucketFiles)}</tbody>
             </Table>
           </Col>
         </Row>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} centered>
+        <Modal isOpen={isDeleteObjectModalOpened} toggle={this.toggle} centered>
           <ModalBody>Do you really want to delete this object?</ModalBody>
           <ModalFooter className="float-left">
-            <Button color="danger" onClick={this.toggle}>
+            <Button color="danger" onClick={this.deleteObject}>
               Delete
-            </Button>{' '}
+            </Button>
             <Button color="secondary" onClick={this.toggle}>
               Cancel
             </Button>
