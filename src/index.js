@@ -5,10 +5,10 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'mobx-react';
 import bucketStore from './stores/BucketStore';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import { App } from './App';
 
-library.add(faTimes);
+library.add(faTimes, faFileAlt);
 
 ReactDOM.render(
   <Provider bucketStore={bucketStore}>
@@ -18,5 +18,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root')
 );
-
-module.hot.accept();
