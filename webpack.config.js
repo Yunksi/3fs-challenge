@@ -1,7 +1,13 @@
 const webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: path.join(__dirname, 'src', 'index.js'),
+  resolve: {
+    extensions: ['*', '.js', '.jsx']
+  },
   module: {
     rules: [
       {
@@ -15,17 +21,20 @@ module.exports = {
       }
     ]
   },
-  resolve: {
-    extensions: ['*', '.js', '.jsx']
-  },
   output: {
-    path: __dirname + '/dist',
-    publicPath: '/',
-    filename: 'main.js'
+    path: path.join(__dirname, 'dist'),
+    filename: 'bundle.js'
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
-  devServer: {
-    contentBase: './dist',
-    hot: true
-  }
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'src', 'index.html')
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        SECURE_CLOUD_STORAGE_API_KEY: JSON.stringify(
+          '8D7BE9CB-F811-457B-AFBF-A997C5C4A6FA'
+        )
+      }
+    })
+  ]
 };
