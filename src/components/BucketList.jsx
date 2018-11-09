@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Button, Table } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CreateBucket from './CreateBucket';
 import './BucketList.css';
@@ -21,6 +22,10 @@ class BucketList extends Component {
     this.props.bucketStore.addNewBucketFormOpen();
   }
 
+  deleteBucket(bucketId) {
+    this.props.bucketStore.removeBucket(bucketId);
+  }
+
   renderBuckets(buckets) {
     return buckets.map(bucket => {
       return (
@@ -29,6 +34,15 @@ class BucketList extends Component {
             <Link to={{ pathname: `/bucket/${bucket.id}` }}>{bucket.name}</Link>
           </td>
           <td>{bucket.location.name}</td>
+          <td>
+            <Button color="danger" onClick={() => this.deleteBucket(bucket.id)}>
+              <FontAwesomeIcon
+                icon="times"
+                color="white"
+                style={{ cursor: 'pointer' }}
+              />
+            </Button>
+          </td>
         </tr>
       );
     });
@@ -81,6 +95,7 @@ class BucketList extends Component {
                   <tr>
                     <th>Name</th>
                     <th>Location</th>
+                    <th />
                   </tr>
                 </thead>
                 <tbody>{this.renderBuckets(buckets)}</tbody>

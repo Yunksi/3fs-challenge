@@ -1,53 +1,44 @@
 import React, { Component } from 'react';
 import { Form, Col, Label, FormGroup, Input, Button, Row } from 'reactstrap';
-import axios from 'axios';
+import { inject, observer } from 'mobx-react';
 
-const apiKey = process.env.SECURE_CLOUD_STORAGE_API_KEY;
-
+@inject('bucketStore')
+@observer
 export class CreateBucket extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      locations: [],
-      bucketName: '',
-      bucketLocationId: null
-    };
-
-    this.handleBucketNameChange.bind(this);
+    // this.handleBucketNameChange.bind(this);
   }
 
   componentDidMount() {
-    axios
-      .get('https://challenge.3fs.si/storage/locations', {
-        headers: {
-          Authorization: `Token ${apiKey}`
-        }
-      })
-      .then(res => {
-        this.setState({
-          locations: res.data.locations
-        });
-      });
+    this.props.bucketStore.getLocations();
   }
 
-  handleBucketNameChange(e) {
-    this.setState({
-      bucketName: e.target.value
-    });
-  }
+  handleBucketNameChange = e => {
+    this.props.bucketStore.newBucket.name = e.target.value;
+  };
 
   handleSubmit(event) {
     event.preventDefault();
-    console.log('Form submitted', event);
+    this.props.bucketStore.addBucket();
   }
 
-  renderLocations() {
+  renderLocations(locations) {
     return (
-      <Input type="select" name="location" id="selectLocation">
-        {this.state.locations.map(location => {
+      <Input
+        type="select"
+        name="location"
+        id="selectLocation"
+        required
+        defaultValue=""
+        onChange={this.handleLocationChange}
+      >
+        <option value="" disabled>
+          Select Type
+        </option>
+        {locations.map(location => {
           return (
-            <option key={location.id} value={location.name}>
+            <option key={location.id} value={location.id}>
               {location.name}
             </option>
           );
@@ -56,13 +47,12 @@ export class CreateBucket extends Component {
     );
   }
 
-  handleLocationChange(e) {
-    this.setState({
-      bucketLocationId: e.target.value
-    });
-  }
+  handleLocationChange = e => {
+    this.props.bucketStore.newBucket.location = e.target.value;
+  };
 
   render() {
+    const { locations } = this.props.bucketStore;
     return (
       <div>
         <h4>Create new bucket</h4>
@@ -77,14 +67,14 @@ export class CreateBucket extends Component {
                   id="bucketName"
                   required
                   placeholder="Enter bucket name"
-                  onChange={e => this.handleBucketNameChange(e)}
+                  onChange={this.handleBucketNameChange}
                 />
               </FormGroup>
             </Col>
             <Col xs="6">
               <FormGroup>
                 <Label for="selectLocation">Bucket Location*</Label>
-                {this.renderLocations()}
+                {this.renderLocations(locations)}
               </FormGroup>
             </Col>
           </Row>

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import BucketDetails from './BucketDetails';
 import BucketFiles from './BucketFiles';
@@ -17,9 +17,8 @@ export class Bucket extends Component {
       files: []
     };
   }
-
   componentDidMount = () => {
-    console.log(this.props.match.params.id);
+    this.props.bucketStore.getBucket(this.props.match.params.id);
   };
 
   toggle(tab) {
@@ -31,9 +30,12 @@ export class Bucket extends Component {
   }
 
   render() {
+    const { selectedBucket } = this.props.bucketStore;
     return (
       <div>
-        <h1 style={{ marginTop: '1em', marginBottom: '1em' }}>Bucket name</h1>
+        <h1 style={{ marginTop: '1em', marginBottom: '1em' }}>
+          {selectedBucket.name ? selectedBucket.name : ''}
+        </h1>
         <Nav tabs>
           <NavItem>
             <NavLink
@@ -58,10 +60,14 @@ export class Bucket extends Component {
         </Nav>
         <TabContent activeTab={this.state.activeTab}>
           <TabPane tabId="files" className="mt-3">
-            <BucketFiles files={this.state.files} />
+            <BucketFiles />
           </TabPane>
           <TabPane tabId="details">
-            <BucketDetails />
+            {selectedBucket.name ? (
+              <BucketDetails bucket={selectedBucket} />
+            ) : (
+              <Fragment />
+            )}
           </TabPane>
         </TabContent>
       </div>

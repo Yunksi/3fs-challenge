@@ -6,10 +6,14 @@ import {
   Table,
   Modal,
   ModalBody,
-  ModalFooter,
-  ModalHeader
+  ModalFooter
 } from 'reactstrap';
+import { inject, observer } from 'mobx-react';
+import { withRouter } from 'react-router';
 
+@withRouter
+@inject('bucketStore')
+@observer
 class BucketFiles extends React.Component {
   constructor(props) {
     super(props);
@@ -19,6 +23,11 @@ class BucketFiles extends React.Component {
     this.fileInputRef = React.createRef();
     this.toggle = this.toggle.bind(this);
   }
+
+  componentDidMount = () => {
+    this.props.bucketStore.getBucketFiles(this.props.match.params.id);
+  };
+
   toggle() {
     this.setState({
       modal: !this.state.modal
@@ -31,7 +40,27 @@ class BucketFiles extends React.Component {
 
   openModalConfirmationDialog() {}
 
+  renderBucketFiles(files) {
+    return files.map(file => {
+      return (
+        <tr>
+          <td>{file.name}</td>
+          <td>{file.last_modified}</td>
+          <td>{file.size}</td>
+        </tr>
+      );
+    });
+  }
+
+  getFile = e => {
+    this.props.bucketStore.addFileToBucket(
+      e.target.files[0],
+      this.props.match.params.id
+    );
+  };
+
   render() {
+    const { totalBucketFilesCount, bucketFiles } = this.props.bucketStore;
     return (
       <div>
         <input
@@ -39,10 +68,11 @@ class BucketFiles extends React.Component {
           ref={this.fileInputRef}
           id="object"
           style={{ display: 'none' }}
+          onChange={this.getFile}
         />
         <Row>
           <Col xs="6">
-            <p>All files ({this.props.files.length})</p>
+            <p>All files ({totalBucketFilesCount})</p>
           </Col>
           <Col xs="6">
             <div className="float-right">
@@ -73,13 +103,7 @@ class BucketFiles extends React.Component {
                   <th>Size</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Filename 001</td>
-                  <td>06.09.2015</td>
-                  <td>2MB</td>
-                </tr>
-              </tbody>
+              <tbody>{this.renderBucketFiles(bucketFiles)}</tbody>
             </Table>
           </Col>
         </Row>
