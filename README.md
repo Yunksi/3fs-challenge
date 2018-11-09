@@ -31,10 +31,10 @@ use `https://onetimesecret.com/secret/idpj2s01iqlzesj9gxtj6sct8l1q2mm` for the a
 
 Important: do not take this task lightly. You will be judged according to the quality, completion and perfection of the task.
 
-# Docker-compose installation
+## Docker-compose installation
 
 Run `docker-compose up -d --build`. Navigate to `http://localhost:8080/`.
 
-# Running locally
+## Running locally
 
 Run `npm install` and after successfully installed all dependencies run `npm start`.
